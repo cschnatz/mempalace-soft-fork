@@ -32,6 +32,7 @@ from .palace_graph import traverse, find_tunnels, graph_stats
 import chromadb
 
 from .knowledge_graph import KnowledgeGraph
+from mempalace.config import get_chroma_client, get_collection_name
 
 logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stderr)
 logger = logging.getLogger("mempalace_mcp")
@@ -69,11 +70,12 @@ def _get_collection(create=False):
     global _client_cache, _collection_cache
     try:
         if _client_cache is None:
-            _client_cache = chromadb.PersistentClient(path=_config.palace_path)
+            _client_cache = get_chroma_client()
+        col_name = get_collection_name(_config)
         if create:
-            _collection_cache = _client_cache.get_or_create_collection(_config.collection_name)
+            _collection_cache = _client_cache.get_or_create_collection(col_name)
         elif _collection_cache is None:
-            _collection_cache = _client_cache.get_collection(_config.collection_name)
+            _collection_cache = _client_cache.get_collection(col_name)
         return _collection_cache
     except Exception:
         return None

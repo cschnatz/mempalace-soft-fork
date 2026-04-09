@@ -18,6 +18,7 @@ from collections import defaultdict
 import chromadb
 
 from .normalize import normalize
+from mempalace.config import get_chroma_client, get_collection_name
 
 
 # File types that might contain conversations
@@ -213,9 +214,9 @@ def detect_convo_room(content: str) -> str:
 
 def get_collection(palace_path: str):
     os.makedirs(palace_path, exist_ok=True)
-    client = chromadb.PersistentClient(path=palace_path)
+    client = get_chroma_client()
     try:
-        return client.get_collection("mempalace_drawers")
+        return client.get_collection(get_collection_name())
     except Exception:
         return client.create_collection("mempalace_drawers")
 
